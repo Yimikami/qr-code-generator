@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QR Studio — Design-forward QR code generator</title>
+    <meta
+      name="description"
+      content="Generate beautiful, fully customizable QR codes with logo embedding. Built with a Linear-inspired dark interface."
+    />
+    <link rel="preconnect" href="https://rsms.me/" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%235e6ad2'/%3E%3Cpath d='M6 6h4v4H6zM14 6h4v4h-4zM6 14h4v4H6zM14 14h2v2h-2zM16 16h2v2h-2zM18 14h-2v2' stroke='%23f7f8f8' stroke-width='1.4' fill='none'/%3E%3C/svg%3E"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand__mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <rect width="24" height="24" rx="5" fill="#5e6ad2" />
+              <path
+                d="M6 6h4v4H6zM14 6h4v4h-4zM6 14h4v4H6zM14 14h2v2h-2zM16 16h2v2h-2zM18 14h-2v2"
+                stroke="#f7f8f8"
+                stroke-width="1.4"
+                fill="none"
+              />
+            </svg>
+          </span>
+          <span class="brand__name">QR Studio</span>
+          <span class="badge">v1.0</span>
+        </div>
+      </header>
+
+      <main class="hero" id="editor">
+        <section class="hero__intro">
+          <h1 class="display">
+            QR codes,<br />
+            <span class="display__accent">precisely engineered.</span>
+          </h1>
+          <p class="lead">
+            Generate scannable, brandable QR codes in real time. Drop in a logo,
+            shape every dot, and export crisp PNG or SVG.
+          </p>
+        </section>
+
+        <section class="grid">
+          <!-- Controls -->
+          <aside class="panel controls" aria-label="Customization controls">
+            <div class="panel__head">
+              <h2 class="panel__title">Customize</h2>
+              <button id="resetBtn" class="btn btn--ghost btn--sm" type="button">
+                Reset
+              </button>
+            </div>
+
+            <!-- Content -->
+            <fieldset class="group">
+              <legend class="group__title">Content</legend>
+
+              <div class="field">
+                <label class="field__label" for="qrType">Type</label>
+                <div class="select">
+                  <select id="qrType">
+                    <option value="url">URL / Text</option>
+                    <option value="wifi">Wi-Fi</option>
+                    <option value="email">Email</option>
+                    <option value="sms">SMS</option>
+                    <option value="vcard">vCard</option>
+                  </select>
+                </div>
+              </div>
+
+              <div data-type-panel="url" class="type-panel">
+                <div class="field">
+                  <label class="field__label" for="qrText">URL or text</label>
+                  <textarea
+                    id="qrText"
+                    class="input input--area"
+                    rows="3"
+                    placeholder="https://github.com/yimikami"
+                  >https://github.com/yimikami</textarea>
+                </div>
+              </div>
+
+              <div data-type-panel="wifi" class="type-panel hidden">
+                <div class="field">
+                  <label class="field__label" for="wifiSsid">Network (SSID)</label>
+                  <input id="wifiSsid" class="input" placeholder="MyNetwork" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="wifiPass">Password</label>
+                  <input id="wifiPass" class="input" placeholder="••••••••" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="wifiEnc">Encryption</label>
+                  <div class="select">
+                    <select id="wifiEnc">
+                      <option value="WPA">WPA / WPA2</option>
+                      <option value="WEP">WEP</option>
+                      <option value="nopass">None</option>
+                    </select>
+                  </div>
+                </div>
+                <label class="check">
+                  <input id="wifiHidden" type="checkbox" />
+                  <span>Hidden network</span>
+                </label>
+              </div>
+
+              <div data-type-panel="email" class="type-panel hidden">
+                <div class="field">
+                  <label class="field__label" for="emailTo">Email</label>
+                  <input id="emailTo" class="input" placeholder="hello@example.com" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="emailSubject">Subject</label>
+                  <input id="emailSubject" class="input" placeholder="Subject" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="emailBody">Body</label>
+                  <textarea id="emailBody" class="input input--area" rows="2"></textarea>
+                </div>
+              </div>
+
+              <div data-type-panel="sms" class="type-panel hidden">
+                <div class="field">
+                  <label class="field__label" for="smsTo">Phone number</label>
+                  <input id="smsTo" class="input" placeholder="+1 555 0100" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="smsBody">Message</label>
+                  <textarea id="smsBody" class="input input--area" rows="2"></textarea>
+                </div>
+              </div>
+
+              <div data-type-panel="vcard" class="type-panel hidden">
+                <div class="field-row">
+                  <div class="field">
+                    <label class="field__label" for="vcFirst">First name</label>
+                    <input id="vcFirst" class="input" />
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="vcLast">Last name</label>
+                    <input id="vcLast" class="input" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="vcOrg">Organization</label>
+                  <input id="vcOrg" class="input" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="vcPhone">Phone</label>
+                  <input id="vcPhone" class="input" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="vcEmail">Email</label>
+                  <input id="vcEmail" class="input" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="vcUrl">Website</label>
+                  <input id="vcUrl" class="input" />
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Logo -->
+            <fieldset class="group">
+              <legend class="group__title">Logo</legend>
+
+              <div class="field">
+                <label class="field__label">Quick presets</label>
+                <div id="logoPresets" class="logo-presets"></div>
+              </div>
+
+              <div id="dropzone" class="dropzone">
+                <input id="logoInput" type="file" accept="image/*" hidden />
+                <div class="dropzone__inner">
+                  <div class="dropzone__icon" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 16V4M5 11l7-7 7 7" />
+                      <path d="M4 20h16" />
+                    </svg>
+                  </div>
+                  <div class="dropzone__copy">
+                    <strong>Drop a logo</strong>
+                    <span>PNG, JPG, or SVG · keep it square</span>
+                  </div>
+                  <button id="logoPick" type="button" class="btn btn--ghost btn--sm">
+                    Choose file
+                  </button>
+                </div>
+                <div id="logoPreview" class="logo-preview hidden">
+                  <img id="logoThumb" alt="Logo preview" />
+                  <div class="logo-preview__meta">
+                    <span id="logoName" class="mono">logo.png</span>
+                    <button id="logoRemove" type="button" class="btn btn--ghost btn--xs">
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field__label" for="logoSize">
+                  Logo size <span id="logoSizeVal" class="mono">0.40</span>
+                </label>
+                <input
+                  id="logoSize"
+                  type="range"
+                  min="0.15"
+                  max="0.6"
+                  step="0.01"
+                  value="0.4"
+                />
+              </div>
+              <div class="field">
+                <label class="field__label" for="logoMargin">
+                  Logo margin <span id="logoMarginVal" class="mono">6 px</span>
+                </label>
+                <input id="logoMargin" type="range" min="0" max="20" step="1" value="6" />
+              </div>
+              <label class="check">
+                <input id="hideDots" type="checkbox" checked />
+                <span>Hide dots behind logo</span>
+              </label>
+            </fieldset>
+
+            <!-- Style -->
+            <fieldset class="group">
+              <legend class="group__title">Style</legend>
+
+              <div class="field">
+                <label class="field__label">Dot shape</label>
+                <div class="chips" id="dotsTypeChips" role="radiogroup">
+                  <button type="button" class="chip" data-value="rounded">Rounded</button>
+                  <button type="button" class="chip is-active" data-value="dots">Dots</button>
+                  <button type="button" class="chip" data-value="classy">Classy</button>
+                  <button type="button" class="chip" data-value="classy-rounded">Classy R.</button>
+                  <button type="button" class="chip" data-value="square">Square</button>
+                  <button type="button" class="chip" data-value="extra-rounded">Extra R.</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field__label">Corner square</label>
+                <div class="chips" id="cornerSqChips" role="radiogroup">
+                  <button type="button" class="chip is-active" data-value="extra-rounded">Rounded</button>
+                  <button type="button" class="chip" data-value="dot">Dot</button>
+                  <button type="button" class="chip" data-value="square">Square</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field__label">Corner dot</label>
+                <div class="chips" id="cornerDotChips" role="radiogroup">
+                  <button type="button" class="chip is-active" data-value="dot">Dot</button>
+                  <button type="button" class="chip" data-value="square">Square</button>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label class="field__label" for="dotColor">Dot color</label>
+                  <div class="color">
+                    <input id="dotColor" type="color" value="#000000" />
+                    <input id="dotColorHex" class="input input--mono" value="#000000" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="bgColor">Background</label>
+                  <div class="color">
+                    <input id="bgColor" type="color" value="#ffffff" />
+                    <input id="bgColorHex" class="input input--mono" value="#ffffff" />
+                  </div>
+                </div>
+              </div>
+
+              <label class="check">
+                <input id="bgTransparent" type="checkbox" />
+                <span>Transparent background</span>
+              </label>
+
+              <label class="check">
+                <input id="useGradient" type="checkbox" />
+                <span>Use gradient on dots</span>
+              </label>
+              <div id="gradientGroup" class="field-row hidden">
+                <div class="field">
+                  <label class="field__label" for="gradStart">Start</label>
+                  <div class="color">
+                    <input id="gradStart" type="color" value="#7170ff" />
+                    <input id="gradStartHex" class="input input--mono" value="#7170ff" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="gradEnd">End</label>
+                  <div class="color">
+                    <input id="gradEnd" type="color" value="#5e6ad2" />
+                    <input id="gradEndHex" class="input input--mono" value="#5e6ad2" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="gradType">Type</label>
+                  <div class="select">
+                    <select id="gradType">
+                      <option value="linear">Linear</option>
+                      <option value="radial">Radial</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label class="field__label" for="cornerSqColor">Corner color</label>
+                  <div class="color">
+                    <input id="cornerSqColor" type="color" value="#000000" />
+                    <input id="cornerSqColorHex" class="input input--mono" value="#000000" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="cornerDotColor">Corner dot</label>
+                  <div class="color">
+                    <input id="cornerDotColor" type="color" value="#000000" />
+                    <input id="cornerDotColorHex" class="input input--mono" value="#000000" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field__label" for="ecLevel">
+                  Error correction
+                </label>
+                <div class="select">
+                  <select id="ecLevel">
+                    <option value="L">L · 7%</option>
+                    <option value="M">M · 15%</option>
+                    <option value="Q" selected>Q · 25%</option>
+                    <option value="H">H · 30% (logo-friendly)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field__label" for="qrMargin">
+                  Quiet zone <span id="qrMarginVal" class="mono">10 px</span>
+                </label>
+                <input id="qrMargin" type="range" min="0" max="40" step="1" value="10" />
+              </div>
+            </fieldset>
+          </aside>
+
+          <!-- Preview -->
+          <section class="panel preview" aria-label="Preview">
+            <div class="panel__head">
+              <h2 class="panel__title">Preview</h2>
+              <span class="pill">
+                <span class="pill__dot"></span>
+                Live
+              </span>
+            </div>
+
+            <div class="stage">
+              <div id="qrCanvas" class="qr"></div>
+            </div>
+
+            <div class="export">
+              <div class="export__row">
+                <label class="field__label" for="exportSize">
+                  Export size <span id="exportSizeVal" class="mono">1024 px</span>
+                </label>
+                <input
+                  id="exportSize"
+                  type="range"
+                  min="256"
+                  max="2048"
+                  step="64"
+                  value="1024"
+                />
+              </div>
+              <div class="export__actions">
+                <button id="downloadPng" class="btn btn--primary" type="button">
+                  Download PNG
+                </button>
+                <button id="downloadSvg" class="btn btn--ghost" type="button">
+                  Download SVG
+                </button>
+                <button id="copyImg" class="btn btn--ghost" type="button">
+                  Copy image
+                </button>
+              </div>
+              <p id="status" class="status" aria-live="polite"></p>
+            </div>
+          </section>
+        </section>
+
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
